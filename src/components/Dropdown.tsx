@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { FC } from 'react';
 import styled from '@emotion/styled';
 
 const Select = styled.select`
@@ -10,14 +10,25 @@ const Select = styled.select`
   border: 1px solid #ccc;
 `;
 
-const Dropdown = ({ options, selectedOption, onSelect }) => {
+export interface DropdownItem {
+  key: string,
+  value: string,
+}
+
+interface IDropdown {
+  options: DropdownItem[];
+  selectedOption: string;
+  onSelect: (value: string) => void
+}
+
+const Dropdown: FC<IDropdown> = ({ options, selectedOption, onSelect }) => {
   return (
     <div>
       <label htmlFor="workflow">Select Workflow:</label>
       <Select
         id="workflow"
         value={selectedOption}
-        onChange={(e) => onSelect(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onSelect(e.target.value)}
       >
         <option value="">Select an option</option>
         {options.map((option) => (

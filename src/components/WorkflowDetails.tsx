@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { FC } from 'react';
 import styled from '@emotion/styled';
+import { Detail } from '../pages/App';
 
 const Form = styled.form`
   display: flex;
@@ -43,8 +44,14 @@ const Button = styled.button`
   }
 `;
 
+interface IWorkflowDetails {
+  details: Detail,
+  formData: Record<string, string>,
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  onSubmit: () => void
+}
 
-const WorkflowDetails = ({ details, formData, onInputChange, onSubmit }) => {
+const WorkflowDetails: FC<IWorkflowDetails> = ({ details, formData, onInputChange, onSubmit }) => {
   return (
     <Form>
     <h2>{details.title}</h2>

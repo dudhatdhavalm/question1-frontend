@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Dropdown from '../components/Dropdown';
+import Dropdown, { DropdownItem } from '../components/Dropdown';
 import WorkflowDetails from '../components/WorkflowDetails';
 import styled from '@emotion/styled';
 
@@ -46,13 +46,31 @@ const Text = styled.p`
   margin-top: 10px;
 `;
 
+export interface Detail {
+  title: string,
+  description: string,
+  params: Record<string, string>[]
+}
 
-function App() {
-  const [options, setOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState('');
-  const [workflowDetails, setWorkflowDetails] = useState(null);
-  const [formData, setFormData] = useState({});
-  const [executionResult, setExecutionResult] = useState([]);
+interface TextResult {
+  type: "text",
+  value: string
+}
+
+interface ImageResult {
+  type: "image",
+  value: string
+}
+
+type ExecutionResult = TextResult | ImageResult;
+
+
+const App = () => {
+  const [options, setOptions] = useState<DropdownItem[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string>('');
+  const [workflowDetails, setWorkflowDetails] = useState<Detail | null>(null);
+  const [formData, setFormData] = useState<Record<string, string>>({});
+  const [executionResult, setExecutionResult] = useState<ExecutionResult[]>([]);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -67,7 +85,7 @@ function App() {
     fetchOptions();
   }, []);
 
-  const handleSelect = (workflowKey) => {
+  const handleSelect = (workflowKey: string) => {
     setSelectedOption(workflowKey);
   };
 
@@ -78,10 +96,10 @@ function App() {
     }
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/description/${selectedOption}`);
+      const response = await axios.get<Detail>(`${process.env.REACT_APP_API_BASE_URL}/description/${selectedOption}`);
       setWorkflowDetails(response.data);
 
-      const initialFormData = {};
+      const initialFormData: Record<string, string> = {};
       response.data.params.forEach(param => {
         initialFormData[param.name] = '';
       });
@@ -92,7 +110,7 @@ function App() {
     }
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({
       ...formData,
@@ -102,7 +120,7 @@ function App() {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/execute`, {
+      const response = await axios.post<ExecutionResult[]>(`${process.env.REACT_APP_API_BASE_URL}/execute`, {
         workflow_key: selectedOption,
         parameters: formData
       });
